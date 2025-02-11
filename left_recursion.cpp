@@ -173,7 +173,7 @@ int main(){
     vector<string> grammarRules;
     string input_grammar;
 
-    cout << "Enter the left recursive grammar (type 'done' to finish):\n";
+    cout << "Enter the left recursive grammar with spaces (type 'done' to finish):\n";
     
     while (true) {
         getline(cin, input_grammar);
