@@ -15,9 +15,11 @@ public:
     }
 
     void setRules(vector<string> rules) {  
-        for (auto rule : rules)  
+        for (auto rule : rules) {
             productionRules.push_back();  
     }  
+    }
+}
 
     vector<string> getRules() {  
         return productionRules;
