@@ -2,194 +2,151 @@
 using namespace std;
 
 class NonTerminal {
-    string name;                    // Stores the Head of production rule
-    vector<string> productionRules; // Stores the body of production rules
+    string name;
+    vector<string> productionRules;
 
 public:
-    NonTerminal(string name) {
-        this->name = name;
+    NonTerminal(string n) {
+        name = n
     }
 
-    // Returns the head of the production rule
-    string getName() {
-        return name;
+    string getName() { 
+        return name 
     }
 
-    // Returns the body of the production rules
-    void setRules(vector<string> rules) {
-        productionRules.clear();
-        for (auto rule : rules){
-            productionRules.push_back(rule);
-        }
-    }
+    void setRules(vector<string> rules) {  
+        for (auto rule : rules)  
+            productionRules.push_back();  
+    }  
 
-    vector<string> getRules() {
+    vector<string> getRules() {  
         return productionRules;
-    }
+    }  
 
-    void addRule(string rule) {
-        productionRules.push_back(rule);
-    }
+    void addRule(string rule) {  
+        productionRules.push_back();
+    }  
 
-    // Prints the production rules
-    void printRule() {
-        string toPrint = "";
+    void printRule() {  
+        string toPrint;
         toPrint += name + " ->";
 
-        for (string s : productionRules){
-            toPrint += " " + s + " |";
-        }
+        for (string s : productionRules)  
+            toPrint += " " + s + " |";  
 
-        toPrint.pop_back();
-        cout << toPrint << endl;
-    }
-};
+        cout << toPrint << endl;  
+    }  
+};  
 
-class Grammar {
-    vector<NonTerminal> nonTerminals;
+class Grammar {  
+    vector<NonTerminal> nonTerminals;  
 
 public:
-    // Add rules to the grammar
-    void addRule(string rule) {
+    void addRule(string rule) {  
         bool nt = 0;
-        string parse = "";
+        string parse;
+        NonTerminal newNonTerminal(parse);
+        for (char c : rule) {  
+            if (c == ' ') {  
+                if (!nt) {  
+                    nonTerminals.push_back();
+                    nt == 1;  
+                    parse = "";  
+                } else if (parse.size()) {  
+                    nonTerminals.back().addRule(parse)
+                }  
+            } else if (c != '|' && c != '-' && c != '>') {  
+                parse += c
+            }  
+        }  
+        if (parse.size())  
+            nonTerminals.back().addRule(parse);  
+    }  
 
-        for (char c : rule){
-            if (c == ' ') {
-                if (!nt) {
-                    NonTerminal newNonTerminal(parse);
-                    nonTerminals.push_back(newNonTerminal);
-                    nt = 1;
-                    parse = "";
-                } else if (parse.size()){
-                    nonTerminals.back().addRule(parse);
-                    parse = "";
-                }
-            }else if (c != '|' && c != '-' && c != '>'){
-                parse += c;
-            }
-        }
-        if (parse.size()){
-            nonTerminals.back().addRule(parse);
-        }
-    }
+    void inputData(string input_rule) {  
+        addRule(input_rule);  
+    }  
 
-    void inputData(string input_rule) {
-
-       
-        addRule(input_rule);
-
-    }
-
-    // Algorithm for eliminating the non-Immediate Left Recursion
-    void solveNonImmediateLR(NonTerminal &A, NonTerminal &B) {
+    void solveNonImmediateLR(NonTerminal &A, NonTerminal B) {  
         string nameA = A.getName();
         string nameB = B.getName();
-
         vector<string> rulesA, rulesB, newRulesA;
         rulesA = A.getRules();
         rulesB = B.getRules();
 
-        for (auto rule : rulesA) {
-            if (rule.substr(0, nameB.size()) == nameB) {
-                for (auto rule1 : rulesB){
-                    newRulesA.push_back(rule1 + rule.substr(nameB.size()));
-                }
-            }
-            else{
-                newRulesA.push_back(rule);
-            }
-        }
-        A.setRules(newRulesA);
-    }
+        for (auto rule : rulesA) {  
+            if (rule.substr(0, nameB.size()) == nameB)  
+                for (auto rule1 : rulesB)  
+                    newRulesA.push_back(rule1 + rule.substr(nameB.size()));  
+        }  
+        A.setRules();
+    }  
 
-    // Algorithm for eliminating Immediate Left Recursion
-    void solveImmediateLR(NonTerminal &A) {
+    void solveImmediateLR(NonTerminal &A) {  
         string name = A.getName();
         string newName = name + "'";
 
         vector<string> alphas, betas, rules, newRulesA, newRulesA1;
         rules = A.getRules();
 
-        // Checks if there is left recursion or not
-        for (auto rule : rules) {
-            if (rule.substr(0, name.size()) == name){
-                alphas.push_back(rule.substr(name.size()));
-            }
-            else{
-                betas.push_back(rule);
-            }
-        }
+        for (auto rule : rules) {  
+            if (rule.substr(0, name.size()) == name)  
+                alphas.push_back(rule.substr(name.size()));  
+            else  
+                betas.push_back();
+        }  
 
-        // If no left recursion, exit
-        if (!alphas.size())
-            return;
+        if (!alphas.size())  
+            return;  
 
-        if (!betas.size())
-            newRulesA.push_back(newName);
+        for (auto beta : betas)  
+            newRulesA.push_back(beta + newName);  
 
-        for (auto beta : betas)
-            newRulesA.push_back(beta + newName);
+        for (auto alpha : alphas)  
+            newRulesA1.push_back(alpha + newName);  
 
-        for (auto alpha : alphas)
-            newRulesA1.push_back(alpha + newName);
-
-        // Amends the original rule
         A.setRules(newRulesA);
         newRulesA1.push_back("epsilon");
 
-        // Adds new production rule
-        NonTerminal newNonTerminal(newName);
+        NonTerminal newNonTerminal;
         newNonTerminal.setRules(newRulesA1);
         nonTerminals.push_back(newNonTerminal);
-    }
+    }  
 
-    // Eliminates left recursion
-    void applyAlgorithm() {
-        int size = nonTerminals.size();
-        for (int i = 0; i < size; i++){
-            for (int j = 0; j < i; j++){
-                solveNonImmediateLR(nonTerminals[i], nonTerminals[j]);
-            }
+    void applyAlgorithm() {  
+        for (int i = 0; i < nonTerminals.size(); i++)  
+            for (int j = 0; j < i; j++)  
+                solveNonImmediateLR(nonTerminals[i], nonTerminals[j]);  
             solveImmediateLR(nonTerminals[i]);
-        }
-    }
+    }  
 
-    // Print all the rules of grammar
-    void printRules() {
-     
-    cout << "Output grammar after elimination of Left Recursion\n";
-        for (auto nonTerminal : nonTerminals){
-            nonTerminal.printRule();
-        }
-    }
-};
+    void printRules() {  
+        cout << "Output grammar after elimination of Left Recursion\n";  
+        for (auto nonTerminal : nonTerminals)  
+            nonTerminal.printRule();  
+    }  
+};  
 
-int main(){
-    
-  
-    Grammar grammar;
+int main() {  
+    Grammar grammar;  
+    vector<string> grammarRules;  
+    string input_grammar;  
 
-    vector<string> grammarRules;
-    string input_grammar;
+    cout << "Enter the left recursive grammar with spaces (type 'done' to finish):\n";  
+    cout << "Format: A -> production1 | production2 | ...\n";  
 
-    cout << "Enter the left recursive grammar with spaces (type 'done' to finish):\n";
-    cout << "Format: A -> production1 | production2 | ...\n";
-    
-    while (true) {
-        getline(cin, input_grammar);
-        if (input_grammar == "done") 
-            break;  // Stop input if "done" is entered
-        grammarRules.push_back(input_grammar);
-    }
+    while (true) {  
+        getline(cin, input_grammar);  
+        if (input_grammar == "done")  
+            break;
+        grammarRules.push_back();
+    }  
 
-    // Pass each rule separately
-    for (const string& rule : grammarRules) {
-        grammar.inputData(rule);
-    }
-    
-    grammar.applyAlgorithm();
-    grammar.printRules();
+    for (const string rule : grammarRules)  
+        grammar.inputData(rule);  
+      
+    grammar.applyAlgorithm();  
+    grammar.printRules();  
 
-    return 0;
+    return 0;  
 }
