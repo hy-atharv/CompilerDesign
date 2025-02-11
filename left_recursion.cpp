@@ -174,6 +174,7 @@ int main(){
     string input_grammar;
 
     cout << "Enter the left recursive grammar with spaces (type 'done' to finish):\n";
+    cout << "Format: A -> production1 | production2 | ...\n";
     
     while (true) {
         getline(cin, input_grammar);
